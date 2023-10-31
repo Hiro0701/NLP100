@@ -1,137 +1,86 @@
-line = '*' * 10
+# A00 文字列の逆順
+def A00(str1: str) -> str:
+    return str1[::-1]
 
-# 00 文字列の逆順
-A00 = 'stressed'[::-1]
 
-print('A00:', A00)
-print(line)
+# A01　「パタトクカシーー」
+def A01(str1: str) -> str:
+    return str1[::2]
 
-# 01　「パタトクカシーー」
-A01_str = 'パタトクカシーー'
-A01 = ''
 
-for i in range(4):
-    A01 += A01_str[i * 2]
-print('A01:', A01)
-print(line)
+# A02　「パトカー」 ＋ 「タクシー」 ＝ 「パタトクカシーー」
+def A02(str1: str, str2: str) -> str:
+    combined_str = ''
+    for i in range(len(str1)):
+        combined_str += str1[i]
+        if str2[i]:
+            combined_str += str2[i]
+    return combined_str
 
-# 02　「パトカー」 ＋ 「タクシー」 ＝ 「パタトクカシーー」
-A02_str1 = 'パトカー'
-A02_str2 = 'タクシー'
-A02 = ''
 
-for i in range(len(A02_str1)):
-    A02 += A02_str1[i]
-    A02 += A02_str2[i]
-print('A02:', A02)
-print(line)
-
-# 03 円周率
-A03_str = 'Now I need a drink, alcoholic of course, after the heavy lectures involving quantum mechanics.'
-A03_list = A03_str.split()
-A03 = []
-
+# A03 円周率
 import string
 
-alphabets = string.ascii_letters
-for i in A03_list:
-    count = 0
-    for j in i:
-        if j in alphabets:
-            count += 1
-    A03.append(count)
-print('A03:', A03)
-print(line)
 
-# 04　元素記号
-A04_str = 'Hi He Lied Because Boron Could Not Oxidize Fluorine. New Nations Might Also Sign Peace Security Clause. Arthur King Can.'
-A04_list = A04_str.split()
-A04 = {}
-A04_idx1 = [1, 5, 6, 7, 8, 9, 15, 16, 19]
-A04_idx2 = [2, 3, 4, 10, 11, 12, 13, 14, 17, 18, 20]
-for i in range(21):
-    if i + 1 in A04_idx1:
-        A04[A04_list[i][0]] = i + 1
-    elif i + 1 in A04_idx2:
-        A04[A04_list[i][0:2]] = i + 1
-print('A04:', A04)
-print(line)
+def A03(str1: str) -> list:
+    alphabets = string.ascii_letters
+    return [sum(1 for char in word if char in alphabets) for word in str1.split()]
 
 
-# 05 n-gram
-def A05(sequence, n):
-    A05_n_gram = []
-    for i in range(len(sequence) - n + 1):
-        n_gram = []
-        for j in range(n):
-            n_gram.append(sequence[i + j])
-        A05_n_gram.append(tuple(n_gram))
-
-    return A05_n_gram
+# A04　元素記号
+def A04(str1: str, list1: list) -> dict:
+    splitted_str = str1.split()
+    return {splitted_str[i][:1] if i + 1 in list1 else splitted_str[i][:2]: i + 1 for i, word in
+            enumerate(splitted_str)}
 
 
-print('A05 word bi-gram:', A05(['I', 'am', 'an', 'NLPer'], 2))
-print('A05 letter bi-gram:', A05('I am an NLPer', 2))
-print(line)
+# A05 n-gram
+def A05(seq: str or list, n: int) -> list:
+    return [tuple(seq[i:i + n]) for i in range(len(seq))][:-1]
 
-# 0　集合
-A06_str1 = 'paraparaparadise'
-A06_str2 = 'paragraph'
-A06_X = set(A05(A06_str1, 2))
-A06_Y = set(A05(A06_str2, 2))
-print('A06 union:', A06_X | A06_Y)
-print('A06 intersection:', A06_X & A06_Y)
-print('A06 difference X - Y', A06_X - A06_Y)
-print('A06 difference Y - X', A06_Y - A06_X)
-print('A06; Is "s, e" in X?:', ('s', 'e') in A06_X)
-print('A06; Is "s, e" in Y?:', ('s', 'e') in A06_Y)
-print(line)
+
+# A06　集合
+def A06(set1: set, set2: set) -> tuple:
+    return set1 | set2, set1 & set2, set1 - set2
 
 
 # 07 テンプレートによる文生成
-def A07(x, y, z):
+def A07(x: int, y: str, z: float) -> str:
     return f'{x}時の{y}は{z}'
 
 
-print('A07 with x=12, y="気温", z=22.4:', A07(12, '気温', 22.4))
-print(line)
-
-
 # 08　暗号文
-def A08_cipher(string):
-    new_string = []
-    for i in string:
-        if i.islower():
-            new_string.append(chr(219 - ord(i)))
-        else:
-            new_string.append(i)
-    return ''.join(new_string)
+def A08(str1: str) -> str:
+    return ''.join([chr(219 - ord(i)) if i.islower() else i for i in str1])
 
 
-print('A08 with "I am a HUge PERSoN.":', A08_cipher("I am a HUge PERSoN."))
-print(line)
 # 09 Typoglycemia
 import random
 
 
-def A09(string):
-    string_list = string.split()
-    new_string = []
-    for i in string_list:
-        if len(i) <= 4:
-            new_string.append(i)
-        else:
-            new_word = []
-            new_word.append(i[0])
-            middle_letters = list(i[1:-1])
-            random.shuffle(middle_letters)
-            new_word.append(''.join(middle_letters))
-            new_word.append(i[-1])
-            new_string.append(''.join(new_word))
-    return ' '.join(new_string)
+def A09(str1: str) -> str:
+    return ' '.join(
+        [i if len(i) <= 4 else i[0] + ''.join(random.sample(i[1:-1], len(i) - 2)) + i[-1] for i in str1.split()])
 
 
-A09_example = "I couldn’t believe that I could actually understand what I was reading : the phenomenal power of the human mind ."
-print(f'A09 with {A09_example}:')
-print(A09(A09_example))
-print(line)
+if __name__ == "__main__":
+    print("A00:", A00('stressed'), '\n')
+    print("A01:", A01('パタトクカシーー'), '\n')
+    print("A02:", A02('パトカー', 'タクシー'), '\n')
+    print("A03:", A03("Now I need a drink, alcoholic of course, after the heavy lectures involving quantum mechanics."),
+          '\n')
+    print("A04:",
+          A04('Hi He Lied Because Boron Could Not Oxidize Fluorine. New Nations Might Also Sign Peace Security Clause. Arthur King Can.',
+              [1, 5, 6, 7, 8, 9, 15, 16, 19]), '\n')
+    print("A05 (words):", A05(['I', 'am', 'an', 'NLPer'], 2), '\n')
+    print("A05 (letters):", A05('I am an NLPer', 2), '\n')
+    print("A06 (union):", A06(set(A05("paraparaparadise", 2)), set(A05("paragraph", 2)))[0], '\n')
+    print("A06 (intersection):", A06(set(A05("paraparaparadise", 2)), set(A05("paragraph", 2)))[1], '\n')
+    print("A06 (difference)", A06(set(A05("paraparaparadise", 2)), set(A05("paragraph", 2)))[2], '\n')
+    print("A06 ('se' in X):", A05('se', 2)[0] in set(A05("paraparaparadise", 2)), '\n')
+    print("A06 ('se in Y):", A05('se', 2)[0] in set(A05("paragraph", 2)), '\n')
+    print("A07:", A07(12, "気温", 22.4), '\n')
+    print("A08:", A08("I am A HuGe PERSON."), '\n')
+    print("A09:",
+          A09("I couldn’t believe that I could actually understand what I was reading : the phenomenal power of the human mind ."),
+          '\n')
