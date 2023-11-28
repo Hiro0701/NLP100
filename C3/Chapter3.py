@@ -59,35 +59,27 @@ def A25(data: str, pattern1: str, pattern2: str) -> dict:
 
 
 # A26 強調マークアップの除去
-def A26(info_data: dict, patterns: list) -> dict:
-    for key, value in info_data.items():
+def A26(info_data: dict, patterns: list,
+        patterns2: list, pattern2: str) -> dict:
+    for key in info_data:
         for p in patterns:
-            info_data[key] = re.sub(p, '\\1', value)
+            info_data[key] = re.sub(p, '\\1', info_data[key])
 
-    return info_data
+        # A27 内部リンクの除去
+        # A28 MediaWikiマークアップの除去
+        for pattern in patterns2:
+            matches1 = re.findall(pattern[0], info_data[key])
 
+            if len(matches1) != 0:
+                matches2 = []
+                for match in matches1:
+                    match2 = re.findall(pattern[1], match[1])
+                    if len(match2) == 0:
+                        info_data[key] = info_data[key].replace(match[0], match[1])
+                    else:
+                        info_data[key] = info_data[key].replace(match[0], match2[0])
 
-# A27 内部リンクの除去
-def A27(info_data: dict, pattern1: str, pattern2: str) -> dict:
-    for key, value in info_data.items():
-        matches = re.findall(pattern1, value)
-        if len(matches) == 0:
-            continue
-        matches2 = []
-        for match in matches:
-            match2 = re.findall(pattern2, match[1])
-            if len(match2) == 0:
-                value = value.replace(match[0], match[1])
-            else:
-                value = value.replace(match[0], match2[0])
-        info_data[key] = value
-
-    return info_data
-
-# A28 MediaWikiマークアップの除去
-def A28(info_data: dict, pattern: str) -> dict:
-    for key, value in info_data.items():
-        info_data[key] = re.sub(pattern, ' ', value)
+        info_data[key] = re.sub(pattern2, ' ', info_data[key])
 
     return info_data
 
@@ -129,14 +121,11 @@ if __name__ == "__main__":
     A25_data = A25(A20_json_data, r'{{基礎情報.*\n}}', r'\|(.+?)\s*=\s*(.+)')
     print('A25:', '\n', A25_data)
     print('')
-    A26_data = A26(A25_data, [r"''''(.*?)''''", "'''(.*?)'''", "''(.*?)''"])
-    print('A26:', '\n', A26_data)
+    A26_data = A26(A25_data,
+                   [r"''''(.*?)''''", "'''(.*?)'''", "''(.*?)''"],
+                   [[r"(\[\[(.*?)\]\])", r'\{\{.*\}\}|[^|]*$'],
+                    [r"(\{\{(.*?)\}\})", r".*\|(.*)"]],
+                   r"(<.*?>)")
+    print('A26, A27, A28:', '\n', A26_data)
     print('')
-    A27_data = A27(A26_data, r"(\[\[(.*?)\]\])", r'\{\{.*\}\}|[^|]*$')
-    print('A27:', '\n', A27_data)
-    print('')
-    A28_data = A27(A27_data, r"(\{\{(.*?)\}\})", r".*\|(.*)")
-    A28_data = A28(A28_data, r"(<.*?>)")
-    print('A28:', '\n', A28_data)
-    print('')
-    print('A29:', A29('https://ja.wikipedia.org/w/api.php', A28_data['国旗画像']))
+    print('A29:', A29('https://ja.wikipedia.org/w/api.php', A26_data['国旗画像']))
