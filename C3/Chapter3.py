@@ -101,10 +101,9 @@ def A29(URL: str, title: str) -> str:
 
     return(IMG_URL)
 
-
-
-if __name__ == "__main__":
-    A20_json_data = A20(json_path, 'イギリス')['text']
+def test_chapter3(country: str):
+    print(f'Data of {country}:')
+    A20_json_data = A20(json_path, country)['text']
     print('A20:', '\n', A20_json_data)
     print('')
     A21_data = A21(A20_json_data, r'\[\[Category:.*\]\]')
@@ -129,3 +128,7 @@ if __name__ == "__main__":
     print('A26, A27, A28:', '\n', A26_data)
     print('')
     print('A29:', A29('https://ja.wikipedia.org/w/api.php', A26_data['国旗画像']))
+
+if __name__ == "__main__":
+    test_chapter3('イギリス')
+    # test_chapter3('大韓民国')

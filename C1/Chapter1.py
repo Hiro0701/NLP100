@@ -62,8 +62,7 @@ def A09(str1: str) -> str:
     return ' '.join(
         [i if len(i) <= 4 else i[0] + ''.join(random.sample(i[1:-1], len(i) - 2)) + i[-1] for i in str1.split()])
 
-
-if __name__ == "__main__":
+def test_chapter1():
     print("A00:", A00('stressed'), '\n')
     print("A01:", A01('パタトクカシーー'), '\n')
     print("A02:", A02('パトカー', 'タクシー'), '\n')
@@ -78,9 +77,14 @@ if __name__ == "__main__":
     print("A06 (intersection):", A06(set(A05("paraparaparadise", 2)), set(A05("paragraph", 2)))[1], '\n')
     print("A06 (difference)", A06(set(A05("paraparaparadise", 2)), set(A05("paragraph", 2)))[2], '\n')
     print("A06 ('se' in X):", A05('se', 2)[0] in set(A05("paraparaparadise", 2)), '\n')
-    print("A06 ('se in Y):", A05('se', 2)[0] in set(A05("paragraph", 2)), '\n')
+    print("A06 ('se' in Y):", A05('se', 2)[0] in set(A05("paragraph", 2)), '\n')
     print("A07:", A07(12, "気温", 22.4), '\n')
     print("A08:", A08("I am A HuGe PERSON."), '\n')
     print("A09:",
           A09("I couldn’t believe that I could actually understand what I was reading : the phenomenal power of the human mind ."),
           '\n')
+
+
+
+if __name__ == "__main__":
+    test_chapter1()

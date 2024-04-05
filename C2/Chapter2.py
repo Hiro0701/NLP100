@@ -102,32 +102,48 @@ def A19(input_path: str, output_path: str):
         for name in name_counts:
             output_file.write(name[0])
 
-
-if __name__ == "__main__":
+def test_chapter2():
     print("A10:", A10(txt_path), '\n')
-    # os.system('wc -l C2/popular-names.txt')
     A11(txt_path, A11_output_path)
-    # os.system("sed 's/\t/ /g' C2/popular-names.txt")
     A12(txt_path, A12_output1_path, A12_output2_path)
-    # os.system("cut -f1 C2/popular-names.txt")
-    # os.system("cut -f2 C2/popular-names.txt")
     A13(A12_output1_path, A12_output2_path, A13_output_path)
-    # os.system("paste C2/A12_col1.txt C2/A12_col2.txt")
     print("A14:")
     for line in A14(txt_path, 5):
         print(line.replace('\n', ''))
     print('')
-    # os.system("head -n 5 C2/popular-names.txt")
     print("A15:")
     for line in A15(txt_path, 5):
         print(line.replace('\n', ''))
     print('')
-    # os.system("tail -n 5 C2/popular-names.txt")
     A16(txt_path, 7)
-    # os.system("split -n 7 -d C2/popular-names.txt C2/A16_unix_")
     print("A17:", A17(A12_output1_path), '\n')
-    # os.system("sort C2/A12_col1.txt | uniq")
     A18(txt_path, A18_output_path)
-    # os.system("sort -k 2 -r C2/popular-names.txt")
     A19(A12_output1_path, A19_output_path)
-    # os.system("sort C2/A12_col1.txt | uniq -c | sort -nr")
+
+def test_chapter2_unix():
+    # A10
+    os.system('wc -l C2/popular-names.txt')
+    # A11
+    os.system("sed 's/\t/ /g' C2/popular-names.txt")
+    # A12
+    os.system("cut -f1 C2/popular-names.txt")
+    os.system("cut -f2 C2/popular-names.txt")
+    # A13
+    os.system("paste C2/A12_col1.txt C2/A12_col2.txt")
+    # A14
+    os.system("head -n 5 C2/popular-names.txt")
+    # A15
+    os.system("tail -n 5 C2/popular-names.txt")
+    # A16
+    os.system("split -n 7 -d C2/popular-names.txt C2/A16_unix_")
+    # A17
+    os.system("sort C2/A12_col1.txt | uniq")
+    # A18
+    os.system("sort -k 2 -r C2/popular-names.txt")
+    # A19
+    os.system("sort C2/A12_col1.txt | uniq -c | sort -nr")
+
+
+if __name__ == "__main__":
+    test_chapter2()
+    test_chapter2_unix()

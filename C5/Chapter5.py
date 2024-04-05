@@ -15,6 +15,7 @@ import os
 
 nlp = spacy.load("ja_ginza")
 
+# Build parsed txt
 
 # with open(ai_txt_path, 'r') as input_txt:
 #     with open(ai_output_path, 'w') as output_txt:
@@ -76,7 +77,7 @@ class Chunk:
         self.srcs = srcs
 
     def __repr__(self):
-        return f'(形態素: {self.morphs}, 係り先: {self.dst}, 係り元: {self.srcs})'
+        return f'(文章: {self.get_sent()}, 係り先: {self.dst}, 係り元: {self.srcs})'
 
     def check_sent(self, condition: str) -> bool:
         if any(condition in morph.pos for morph in self.morphs):
@@ -137,7 +138,7 @@ def A40(input_path: str) -> list:
 
                 sent_chunk_list.append(Chunk(chunk_bunsetu_list,
                                              dst if dst else '',
-                                             src_list if src_list else ''))
+                                             src_list if src_list else []))
                 current_bunsetu += 1
 
             sent_dict['morph'] = sent_morph_list
@@ -148,8 +149,8 @@ def A40(input_path: str) -> list:
 
 
 # A42 係り元と係り先の文節の表示
-def A42(sent_list: list):
-    with open(A42_output_txt_path, 'w') as output_txt:
+def A42(sent_list: list, output_path: str):
+    with open(output_path, 'w') as output_txt:
         for sent in sent_list:
             for bunsetu in sent['chunk']:
                 if sent['chunk'].index(bunsetu) != bunsetu.dst:
@@ -158,8 +159,8 @@ def A42(sent_list: list):
 
 
 # A43 名詞を含む文節が動詞を含む文節に係るものを抽出
-def A43(sent_list: list):
-    with open(A43_output_txt_path, 'w') as output_txt:
+def A43(sent_list: list, output_path: str):
+    with open(output_path, 'w') as output_txt:
         for sent in sent_list:
             for bunsetu in sent['chunk']:
                 if sent['chunk'].index(bunsetu) != bunsetu.dst:
@@ -169,6 +170,7 @@ def A43(sent_list: list):
 
 
 # A44 係り受け木の可視化
+# URL: localhost:port
 def A44(sentence: list):
     words = []
     for bunsetu in sentence:
@@ -188,48 +190,49 @@ def A44(sentence: list):
 
 # A45 動詞の格パターンの抽出
 # A46 動詞の格フレーム情報の抽出
-def A45(sent_list: list):
-    with open(A45_output_txt_path, 'w') as output_txt1:
-        with open(A46_output_txt_path, 'w') as output_txt2:
-            for sent in sent_list:
-                for bunsetu in sent['chunk']:
-                    verb_bool = False
+def A45(sent_list: list, output_path: str, predicate_condition: str, case_condition: str, print_bunsetu=False):
+    with open(output_path, 'w') as output_txt:
+        for sent in sent_list:
+            for bunsetu in sent['chunk']:
+                predicate_bool = False
 
-                    for word in bunsetu.morphs:
-                        if word.pos == '動詞':
-                            predicate = word.base
-                            verb_bool = True
+                for word in bunsetu.morphs:
+                    if word.pos == predicate_condition:
+                        predicate = word.base
+                        predicate_bool = True
+                        break
+
+                if predicate_bool:
+                    if bunsetu.srcs:
+                        bunsetu_cases = []
+
+                        for idx in bunsetu.srcs:
+                            dep_bunsetu = sent['chunk'][idx]
+                            if dep_bunsetu.check_sent(case_condition):
+                                bunsetu_cases.append(
+                                    [dep_bunsetu.get_morphs_sent(case_condition), dep_bunsetu.get_sent()])
+
+                        if len(bunsetu_cases) == 0:
                             break
 
-                    if verb_bool:
-                        if bunsetu.srcs:
-                            bunsetu_cases = []
+                        morphs = [bunsetu_case[0] for bunsetu_case in bunsetu_cases]
+                        morphs = [morph for morph_list in morphs for morph in morph_list]
 
-                            for idx in bunsetu.srcs:
-                                dep_bunsetu = sent['chunk'][idx]
-                                if dep_bunsetu.check_sent('助詞'):
-                                    bunsetu_cases.append([dep_bunsetu.get_morphs_sent('助詞'), dep_bunsetu.get_sent()])
-
-                            if len(bunsetu_cases) == 0:
-                                break
-
+                        if not print_bunsetu:
+                            line = predicate + '\t' + '\t'.join(sorted(morphs)) + '\n'
+                            output_txt.write(line)
+                        else:
                             sorted_bunsetu_cases = sorted(bunsetu_cases, key=lambda x: x[0][0])
 
-                            morphs = [bunsetu_case[0] for bunsetu_case in bunsetu_cases]
-                            morphs = [morph for morph_list in morphs for morph in morph_list]
-
-                            line1 = predicate + '\t' + '\t'.join(sorted(morphs)) + '\n'
-                            line2 = predicate + '\t' + '\t'.join(sorted(morphs)) + '\t' + '\t'.join(
+                            line = predicate + '\t' + '\t'.join(sorted(morphs)) + '\t' + '\t'.join(
                                 [sorted_bunsetu_case[1] for sorted_bunsetu_case in sorted_bunsetu_cases]) + '\n'
-
-                            output_txt1.write(line1)
-                            output_txt2.write(line2)
-                            break
+                            output_txt.write(line)
+                        break
 
 
 # A47 機能動詞構文のマイニング
-def A47(sent_list: list):
-    with open(A47_output_txt_path, 'w') as output_txt:
+def A47(sent_list: list, output_path: str):
+    with open(output_path, 'w') as output_txt:
         for sent in sent_list:
             for bunsetu in sent['chunk']:
                 for word1, word2 in zip(bunsetu.morphs, bunsetu.morphs[1:]):
@@ -243,12 +246,12 @@ def A47(sent_list: list):
                                 break
 
                         if verb_bool:
-                            if sent['chunk'][bunsetu.dst].srcs or bunsetu.srcs:
+                            idx_list = sent['chunk'][bunsetu.dst].srcs + bunsetu.srcs
+                            idx_list.remove(sent['chunk'].index(bunsetu))
+
+                            if idx_list:
                                 bunsetu_cases = []
-                                for idx in sent['chunk'][bunsetu.dst].srcs + bunsetu.srcs if \
-                                        sent['chunk'][bunsetu.dst].srcs and bunsetu.srcs else \
-                                        sent['chunk'][bunsetu.dst].srcs if sent['chunk'][
-                                            bunsetu.dst].srcs else bunsetu.srcs:
+                                for idx in idx_list:
                                     dep_bunsetu = sent['chunk'][idx]
                                     if dep_bunsetu.check_sent('助詞'):
                                         bunsetu_cases.append(
@@ -271,8 +274,8 @@ def A47(sent_list: list):
 
 
 # A48 名詞から根へのパスの抽出
-def A48(sent_list: list):
-    with open(A48_output_txt_path, 'w') as output_txt:
+def A48(sent_list: list, output_path: str):
+    with open(output_path, 'w') as output_txt:
         for sent in sent_list:
             for bunsetu in sent['chunk']:
                 if bunsetu.check_sent("名詞"):
@@ -280,11 +283,10 @@ def A48(sent_list: list):
                     bunsetu_list = []
 
                     while True:
+                        bunsetu_list.append(current_bunsetu.get_sent())
                         if current_bunsetu.dst == sent['chunk'].index(current_bunsetu):
-                            bunsetu_list.append(current_bunsetu.get_sent())
                             break
                         else:
-                            bunsetu_list.append(current_bunsetu.get_sent())
                             current_bunsetu = sent['chunk'][current_bunsetu.dst]
 
                     if len(bunsetu_list) > 1:
@@ -293,25 +295,21 @@ def A48(sent_list: list):
 
 
 # A49 名詞間の係り受けパスの抽出
-def sub_X_Y(bunsetu: Chunk, X_Y='X') -> str:
-    noun_chunks = bunsetu.get_morphs_sent('名詞')
-    print(bunsetu.get_sent())
-    print(noun_chunks)
-
-    if len(noun_chunks) >= 1:
-        start_idx = bunsetu.get_sent().find(noun_chunks[0])
-        end_idx = bunsetu.get_sent().rfind(noun_chunks[-1]) + len(noun_chunks[-1])
-        line = bunsetu.get_sent().replace(
-            bunsetu.get_sent()[start_idx:end_idx],
-            X_Y)
-    else:
-        line = bunsetu.get_sent().replace(noun_chunks[0].surface, X_Y)
-
-    print(line)
-    return line
-
-
 def A49(sent_list: list):
+    def sub_X_Y(bunsetu: Chunk, X_Y='X') -> str:
+        noun_chunks = bunsetu.get_morphs_sent('名詞')
+
+        if len(noun_chunks) >= 1:
+            start_idx = bunsetu.get_sent().find(noun_chunks[0])
+            end_idx = bunsetu.get_sent().rfind(noun_chunks[-1]) + len(noun_chunks[-1])
+            line = bunsetu.get_sent().replace(
+                bunsetu.get_sent()[start_idx:end_idx],
+                X_Y)
+        else:
+            line = bunsetu.get_sent().replace(noun_chunks[0].surface, X_Y)
+
+        return line
+
     with open(A49_output_txt_path, 'w') as output_txt:
         for sent in sent_list:
             for idx in range(len(sent['chunk'])):
@@ -343,10 +341,10 @@ def A49(sent_list: list):
                             if pair_idx in dep_idx_list:
                                 for idx3 in dep_idx_list:
                                     if pair_idx == idx3:
-                                        line1 = line1 + ' -> ' + sub_X_Y(sent['chunk'][idx3], 'Y')
+                                        line1 += ' -> ' + sub_X_Y(sent['chunk'][idx3], 'Y')
                                         break
                                     else:
-                                        line1 = line1 + ' -> ' + sent['chunk'][idx3].get_sent()
+                                        line1 += ' -> ' + sent['chunk'][idx3].get_sent()
 
                                 output_txt.write(line1 + '\n')
                             else:
@@ -360,35 +358,53 @@ def A49(sent_list: list):
                                         pair_dep_idx_list.append(current_pair_bunsetu.dst)
                                         current_pair_bunsetu = sent['chunk'][current_pair_bunsetu.dst]
 
-                                for dep_idx in range(len(dep_idx_list) - 1):
-                                    line2 = line2 + ' -> ' + sent['chunk'][dep_idx].get_sent()
+                                try:
+                                    final_bunsetu_idx = min(list(set(dep_idx_list) & set(pair_dep_idx_list)))
+                                except ValueError:
+                                    break
+
+                                for dep_idx in dep_idx_list:
+                                    if dep_idx != final_bunsetu_idx:
+                                        line2 += ' -> ' + sent['chunk'][dep_idx].get_sent()
+                                    else:
+                                        break
 
                                 line3 = sub_X_Y(sent['chunk'][pair_idx], 'Y')
 
-                                for pair_dep_idx in range(len(pair_dep_idx_list) - 1):
-                                    line3 =  line3 + ' -> ' + sent['chunk'][pair_dep_idx].get_sent()
+                                for pair_dep_idx in pair_dep_idx_list:
+                                    if pair_dep_idx != final_bunsetu_idx:
+                                        line3 += ' -> ' + sent['chunk'][pair_dep_idx].get_sent()
 
-                                line2 = line2 + ' | ' + line3 + ' | ' + sent['chunk'][dep_idx_list[-1]].get_sent()
+                                line2 = line2 + ' | ' + line3 + ' | ' + sent['chunk'][final_bunsetu_idx].get_sent()
 
                                 output_txt.write(line2 + '\n')
 
 
-if __name__ == '__main__':
+def test_chapter5():
     A40_sent_list = A40(ai_output_path)
     print("A40:", '\n')
     print(A40_sent_list[0]['morph'])
     print(A40_sent_list[0]['chunk'])
-    A42(A40_sent_list)
-    A43(A40_sent_list)
+    A42(A40_sent_list, A42_output_txt_path)
+    A43(A40_sent_list, A43_output_txt_path)
     A44(A40_sent_list[0]['chunk'])
-    A45(A40_sent_list)
-    os.system("""cat A45.txt | awk 'BEGIN {FS="\t"} {for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
+    A45(A40_sent_list, A45_output_txt_path, '動詞', '助詞')
+    A45(A40_sent_list, A46_output_txt_path, '動詞', '助詞', True)
+    os.system(
+        """cat A45.txt | awk 'BEGIN {FS="\t"} {for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
     print("")
-    os.system("""cat A45.txt | awk 'BEGIN {FS="\t"} {if ($1 == "行う") for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
+    os.system(
+        """cat A45.txt | awk 'BEGIN {FS="\t"} {if ($1 == "行う") for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
     print("")
-    os.system("""cat A45.txt | awk 'BEGIN {FS="\t"} {if ($1 == "なる") for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
+    os.system(
+        """cat A45.txt | awk 'BEGIN {FS="\t"} {if ($1 == "なる") for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
     print("")
-    os.system("""cat A45.txt | awk 'BEGIN {FS="\t"} {if ($1 == "与える") for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
-    A47(A40_sent_list)
-    A48(A40_sent_list)
+    os.system(
+        """cat A45.txt | awk 'BEGIN {FS="\t"} {if ($1 == "与える") for(i=2; i<=NF; i++) print $1 " " $i}' | sort | uniq -c | sort -nr""")
+    A47(A40_sent_list, A47_output_txt_path)
+    A48(A40_sent_list, A48_output_txt_path)
     A49(A40_sent_list)
+
+
+if __name__ == '__main__':
+    test_chapter5()

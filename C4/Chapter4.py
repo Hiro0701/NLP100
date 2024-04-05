@@ -20,14 +20,16 @@ def A30(txt_path: str) -> list:
                 if len(splitted_pos) <= 1:
                     continue
 
-                lined_list.append({'表層形': splitted_pos[0],
-                                   '基本形': splitted_pos[3],
-                                   '品詞': splitted_pos[4].split('-')[0],
-                                   '品詞細分類1': splitted_pos[4].split('-')[1] if len(
-                                       splitted_pos[4].split('-')) != 1 else ''
-                                   })
+                if '補助記号' not in splitted_pos[4]:
+                    lined_list.append({'表層形': splitted_pos[0],
+                                       '基本形': splitted_pos[3],
+                                       '品詞': splitted_pos[4].split('-')[0],
+                                       '品詞細分類1': splitted_pos[4].split('-')[1] if len(
+                                           splitted_pos[4].split('-')) != 1 else ''
+                                       })
 
-            pos_list.append(lined_list)
+            if lined_list:
+                pos_list.append(lined_list)
 
         return pos_list
 
@@ -151,17 +153,17 @@ def A38(sorted_frequent_dict: dict):
     plt.ylim(0, 100)
     plt.show()
 
+
 # A39 Zipfの法則
 def A39(sorted_frequent_dict: dict):
-    plt.loglog([i+1 for i in range(len(sorted_frequent_dict))],
-            [i for i in sorted_frequent_dict.values()])
+    plt.loglog([i + 1 for i in range(len(sorted_frequent_dict))],
+               [i for i in sorted_frequent_dict.values()])
     plt.title("A39: 単語の出現頻度と順位の両対数")
     plt.xlabel("出現頻度順位")
     plt.ylabel("出現頻度")
     plt.show()
 
-
-if __name__ == '__main__':
+def test_chapter4():
     A30_pos_list = A30(neko_txt_path)
     print("A30:", '\n', A30_pos_list)
     print('')
@@ -180,3 +182,5 @@ if __name__ == '__main__':
     A38(A35_sorted_frequent_dict)
     A39(A35_sorted_frequent_dict)
 
+if __name__ == '__main__':
+    test_chapter4()
