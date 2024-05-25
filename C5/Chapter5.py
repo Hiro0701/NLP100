@@ -17,45 +17,45 @@ nlp = spacy.load("ja_ginza")
 
 # Build parsed txt
 
-# with open(ai_txt_path, 'r') as input_txt:
-#     with open(ai_output_path, 'w') as output_txt:
-#
-#         output_list = []
-#         for line in input_txt:
-#             doc = nlp(line)
-#
-#             for sent in doc.sents:
-#                 sentence_dict = {}
-#                 pos_list = []
-#                 dep_list = []
-#
-#                 if sent.__len__() > 1:
-#                     for span in ginza.bunsetu_spans(sent):
-#                         pos_list2 = []
-#
-#                         for token in span:
-#                             token_pos = token.tag_.split('-')
-#                             # (order, surface, base, pos, pos1)
-#                             pos_list2.append([token.i,
-#                                               token.text,
-#                                               token.lemma_,
-#                                               token_pos[0],
-#                                               token_pos[2] if len(token_pos) > 1 and token_pos[1] == "普通名詞" else (token_pos[1] if len(token_pos) > 1 else '-')
-#                                               ])
-#
-#                         pos_list.append(pos_list2)
-#
-#                         for token in span.lefts:
-#                             dep_list.append((ginza.bunsetu_spans(sent).index(ginza.bunsetu_span(token)),
-#                                              ginza.bunsetu_spans(sent).index(span)))
-#
-#                 if pos_list and dep_list:
-#                     sentence_dict['pos'] = pos_list
-#                     sentence_dict['dep'] = dep_list
-#
-#                     output_list.append(sentence_dict)
-#
-#         json.dump(output_list, output_txt, ensure_ascii=False)
+with open(ai_txt_path, 'r') as input_txt:
+    with open(ai_output_path, 'w') as output_txt:
+
+        output_list = []
+        for line in input_txt:
+            doc = nlp(line)
+
+            for sent in doc.sents:
+                sentence_dict = {}
+                pos_list = []
+                dep_list = []
+
+                if sent.__len__() > 1:
+                    for span in ginza.bunsetu_spans(sent):
+                        pos_list2 = []
+
+                        for token in span:
+                            token_pos = token.tag_.split('-')
+                            # (order, surface, base, pos, pos1)
+                            pos_list2.append([token.i,
+                                              token.text,
+                                              token.lemma_,
+                                              token_pos[0],
+                                              token_pos[2] if len(token_pos) > 1 and token_pos[1] == "普通名詞" else (token_pos[1] if len(token_pos) > 1 else '-')
+                                              ])
+
+                        pos_list.append(pos_list2)
+
+                        for token in span.lefts:
+                            dep_list.append((ginza.bunsetu_spans(sent).index(ginza.bunsetu_span(token)),
+                                             ginza.bunsetu_spans(sent).index(span)))
+
+                if pos_list and dep_list:
+                    sentence_dict['pos'] = pos_list
+                    sentence_dict['dep'] = dep_list
+
+                    output_list.append(sentence_dict)
+
+        json.dump(output_list, output_txt, ensure_ascii=False)
 
 # A40 係り受け解析結果の読み込み（形態素）
 class Morph:

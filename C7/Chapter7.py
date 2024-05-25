@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 data_path = 'GoogleNews-vectors-negative300.bin'
@@ -151,7 +153,7 @@ def test_chapter7():
     A62()
     print('')
     A63()
-    A64()
+    # A64()
     A65()
     print('')
     A66()

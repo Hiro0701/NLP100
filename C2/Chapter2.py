@@ -1,10 +1,10 @@
-txt_path = 'C2/popular-names.txt'
-A11_output_path = 'C2/A11.txt'
-A12_output1_path = 'C2/A12_col1.txt'
-A12_output2_path = 'C2/A12_col2.txt'
-A13_output_path = 'C2/A13.txt'
-A18_output_path = 'C2/A18.txt'
-A19_output_path = 'C2/A19.txt'
+txt_path = 'popular-names.txt'
+A11_output_path = 'A11.txt'
+A12_output1_path = 'A12_col1.txt'
+A12_output2_path = 'A12_col2.txt'
+A13_output_path = 'A13.txt'
+A18_output_path = 'A18.txt'
+A19_output_path = 'A19.txt'
 
 # A10 行数のカウント
 import os
@@ -64,7 +64,7 @@ def get_idx(len: int, n: int) -> list:
 
 
 def A16(input_path: str, n: int):
-    output_path = 'C2/A16_{}.txt'
+    output_path = 'A16_{}.txt'
     with open(input_path, 'r') as file:
         lines = file.readlines()
         split_idx = get_idx(len(lines), n)
@@ -122,26 +122,26 @@ def test_chapter2():
 
 def test_chapter2_unix():
     # A10
-    os.system('wc -l C2/popular-names.txt')
+    os.system('wc -l popular-names.txt')
     # A11
-    os.system("sed 's/\t/ /g' C2/popular-names.txt")
+    os.system("sed 's/\t/ /g' popular-names.txt")
     # A12
-    os.system("cut -f1 C2/popular-names.txt")
-    os.system("cut -f2 C2/popular-names.txt")
+    os.system("cut -f1 popular-names.txt")
+    os.system("cut -f2 popular-names.txt")
     # A13
-    os.system("paste C2/A12_col1.txt C2/A12_col2.txt")
+    os.system("paste A12_col1.txt A12_col2.txt")
     # A14
-    os.system("head -n 5 C2/popular-names.txt")
+    os.system("head -n 5 popular-names.txt")
     # A15
-    os.system("tail -n 5 C2/popular-names.txt")
+    os.system("tail -n 5 popular-names.txt")
     # A16
-    os.system("split -n 7 -d C2/popular-names.txt C2/A16_unix_")
+    os.system("split -n 7 -d popular-names.txt A16_unix_")
     # A17
-    os.system("sort C2/A12_col1.txt | uniq")
+    os.system("sort A12_col1.txt | uniq")
     # A18
-    os.system("sort -k 2 -r C2/popular-names.txt")
+    os.system("sort -k 2 -r popular-names.txt")
     # A19
-    os.system("sort C2/A12_col1.txt | uniq -c | sort -nr")
+    os.system("sort A12_col1.txt | uniq -c | sort -nr")
 
 
 if __name__ == "__main__":

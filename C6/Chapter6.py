@@ -163,7 +163,7 @@ import matplotlib.pyplot as plt
 
 
 def A58():
-    reg_list = [0.1, 0.3, 0.5, 0.7, 1.1, 1.3, 1.5, 1.7, 1.9]
+    reg_list = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9]
     model2 = LogisticRegression(C=0.1)
     model3 = LogisticRegression(C=0.3)
     model4 = LogisticRegression(C=0.5)
@@ -220,12 +220,11 @@ import warnings
 from scipy.linalg import LinAlgWarning
 
 
-# CPU 딸려서 아직 실행 못함
 def A59():
-    penalties = [None, 'l2', 'l1', 'elasticnet']
-    tols = [1e-3, 1e-4, 1e-5]
-    Cs = [1.0, 1.5, 2.0]
-    solvers = ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
+    penalties = ['l2', 'l1', 'elasticnet']
+    tols = [1e-3, 1e-5]
+    Cs = [1.0, 2.0]
+    solvers = ['lbfgs', 'liblinear', 'newton-cg']
     max_iters = [100, 200, 300]
     valid_scores = []
     combs = list(itertools.product(penalties, tols, Cs, solvers, max_iters))
@@ -244,13 +243,13 @@ def A59():
     best_accuracy = max(valid_scores)
     best_comb = combs[valid_scores.index(best_accuracy)]
 
-    print(f"Best parameters are: {best_comb} with accuracy in valid set: {best_accuracy}.")
+    print(f"Best parameters are: {best_comb} with accuracy in valid set: {round(best_accuracy * 100, 5)}.")
 
     model = LogisticRegression(penalty=best_comb[0], tol=best_comb[1], C=best_comb[2], solver=best_comb[3],
                                max_iter=best_comb[4])
     model.fit(train_X, train_y)
 
-    print(f"The accuracy in test set: {model.score(test_X, test_y)}")
+    print(f"The accuracy in test set: {round(model.score(test_X, test_y) * 100, 5)}")
 
     joblib.dump(model, 'best_model.pkl')
 

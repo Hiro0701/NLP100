@@ -3,7 +3,6 @@ neko_txt_path = 'neko.txt'
 # A30 形態素解析結果の読み込み
 import MeCab
 
-
 def A30(txt_path: str) -> list:
     with open(txt_path, 'r') as file:
         pos_list = []
@@ -16,17 +15,17 @@ def A30(txt_path: str) -> list:
                 continue
 
             for parse in parsed.split('\n'):
-                splitted_pos = parse.split('\t')
-                if len(splitted_pos) <= 1:
-                    continue
+                if parse == 'EOS' or parse == '':
+                    break
 
-                if '補助記号' not in splitted_pos[4]:
-                    lined_list.append({'表層形': splitted_pos[0],
-                                       '基本形': splitted_pos[3],
-                                       '品詞': splitted_pos[4].split('-')[0],
-                                       '品詞細分類1': splitted_pos[4].split('-')[1] if len(
-                                           splitted_pos[4].split('-')) != 1 else ''
-                                       })
+                splitted_parse = parse.split('\t')
+                splitted_pos = splitted_parse[1].split(',')
+
+                lined_list.append({'表層形': splitted_parse[0],
+                                   '基本形': splitted_pos[-3],
+                                   '品詞': splitted_pos[0],
+                                   '品詞細分類1': splitted_pos[1],
+                                   })
 
             if lined_list:
                 pos_list.append(lined_list)
@@ -163,6 +162,7 @@ def A39(sorted_frequent_dict: dict):
     plt.ylabel("出現頻度")
     plt.show()
 
+
 def test_chapter4():
     A30_pos_list = A30(neko_txt_path)
     print("A30:", '\n', A30_pos_list)
@@ -181,6 +181,7 @@ def test_chapter4():
     A37(A30_pos_list, pos='動詞')
     A38(A35_sorted_frequent_dict)
     A39(A35_sorted_frequent_dict)
+
 
 if __name__ == '__main__':
     test_chapter4()
