@@ -86,13 +86,14 @@ model = joblib.load('model.pkl')
 
 
 # A53 予測
-def A53(headline: str):
-    vectorized_headline = vectorizer.transform([headline])
+def A53(headlines: list):
+    for headline in headlines:
+        vectorized_headline = vectorizer.transform([headline])
 
-    print(f"The probability of categories of news with headline '{headline}':")
-    for category, prob in zip(['business', 'entertainment', 'health', 'technology'],
-                              model.predict_proba(vectorized_headline)[0]):
-        print(f"{category} - {round(prob * 100, 2)}%")
+        print(f"The probability of categories of news with headline '{headline}':")
+        for category, prob in zip(['business', 'entertainment', 'health', 'technology'],
+                                  model.predict_proba(vectorized_headline)[0]):
+            print(f"{category} - {round(prob * 100, 2)}%")
 
 
 # A54 正解率の計測
@@ -100,8 +101,8 @@ def A54():
     accuracy_train = model.score(train_X, train_y)
     accuracy_test = model.score(test_X, test_y)
 
-    print(f"Train set accuracy: {round(accuracy_train * 100, 2)}%")
-    print(f"Test set accuracy: {round(accuracy_test * 100, 2)}%")
+    print(f"Train set accuracy: {round(accuracy_train * 100, 5)}%")
+    print(f"Test set accuracy: {round(accuracy_test * 100, 5)}%")
 
 
 # A55 混同行列の作成
@@ -255,22 +256,22 @@ def A59():
 
 
 def test_chapter6():
-    A50()
-    A51()
-    A52()
-    A53("An anonymous scientist found a particle even smaller than quark.")
-    print('')
-    A53("10 funny apps to try when you're bored.")
-    print('')
-    A54()
-    print('')
-    A55()
-    print('')
-    A56()
-    print('')
-    A57()
-    print('')
-    A58()
+    # A50()
+    # A51()
+    # A52()
+    # A53(["An anonymous scientist found a particle even smaller than quark.",
+    #      "The new iPhone is released with a new feature.",
+    #      "Russia has closed its border.",])
+    # print('')
+    # A54()
+    # print('')
+    # A55()
+    # print('')
+    # A56()
+    # print('')
+    # A57()
+    # print('')
+    # A58()
     A59()
 
 

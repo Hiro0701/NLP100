@@ -146,13 +146,13 @@ def A69():
 
 
 def test_chapter7():
-    A60()
-    print('')
-    A61()
-    print('')
-    A62()
-    print('')
-    A63()
+    # A60()
+    # print('')
+    # A61()
+    # print('')
+    # A62()
+    # print('')
+    # A63()
     # A64()
     A65()
     print('')
