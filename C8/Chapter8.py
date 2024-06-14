@@ -202,9 +202,8 @@ def test_chapter8():
     # A70()
     # print(A71())
     # print(A72())
-    # A73(200, 16)
+    A73(200, 16)
     # print(A74())
-    import torch
 
 
 if __name__ == '__main__':
